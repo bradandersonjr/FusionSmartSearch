@@ -214,13 +214,13 @@
         let searchAllMode = false;
 
         function applyInjectedConfig() {
-            if (!window.FUSION_QA_CONFIG) {
+            if (!window.FUSION_SEARCH_CONFIG) {
                 return false;
             }
             updateSettings(
-                window.FUSION_QA_CONFIG.services || {},
-                window.FUSION_QA_CONFIG.ai_assistant || 'chatgpt',
-                window.FUSION_QA_CONFIG.search_all_mode || false
+                window.FUSION_SEARCH_CONFIG.services || {},
+                window.FUSION_SEARCH_CONFIG.ai_assistant || 'chatgpt',
+                window.FUSION_SEARCH_CONFIG.search_all_mode || false
             );
             return true;
         }

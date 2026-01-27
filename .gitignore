@@ -9,8 +9,8 @@ __pycache__/
 Palette_temp.html
 
 # Configuration files (if they contain user-specific data)
-# Uncomment the next line if qa_config.json contains personal data
-# qa_config.json
+# Uncomment the next line if config.json contains personal data
+# config.json
 
 # IDE
 .idea/

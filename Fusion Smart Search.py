@@ -34,7 +34,7 @@ Usage:
 Configuration:
     - Service Toggles: Enable/disable individual services (YouTube, Facebook, Google, Autodesk Forums, Reddit, AI Assistant)
     - AI Assistant Selection: Choose between ChatGPT, Claude, Gemini, or Perplexity
-    - All settings are stored locally in qa_config.json
+    - All settings are stored locally in config.json
 
 Technical Details:
     - Built on Autodesk Fusion's Command and Event Handler architecture
@@ -64,7 +64,7 @@ ADDIN_AUTHOR = 'brad anderson jr'
 ADDIN_CONTACT = 'brad@bradandersonjr.com'
 
 # File and path constants
-CONFIG_FILENAME = 'qa_config.json'
+CONFIG_FILENAME = 'config.json'
 
 # UI element identifiers
 PALETTE_ID = 'FusionSmartSearchPalette'
@@ -192,7 +192,7 @@ def get_config_path() -> str:
     Retrieves the absolute path to the configuration file.
 
     Returns:
-        str: Absolute path to the qa_config.json file
+        str: Absolute path to the config.json file
     """
     addin_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(addin_dir, CONFIG_FILENAME)
@@ -694,7 +694,7 @@ class SettingsHandler(adsk.core.CommandEventHandler):
             # Inject config as a script tag
             injection = f'''<head>
     <script>
-        window.FUSION_QA_CONFIG = {config_json};
+        window.FUSION_SEARCH_CONFIG = {config_json};
     </script>'''
 
             html_content = html_content.replace('<head>', injection, 1)

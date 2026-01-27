@@ -91,7 +91,7 @@ Fusion Smart Search/
 ├── Fusion Smart Search.manifest    # Add-in configuration (v1.0.0)
 ├── Palette.html                    # Settings UI template
 ├── Palette_temp.html              # Generated HTML (auto-created, ignored by git)
-├── qa_config.json                 # User configuration (auto-generated)
+├── config.json                 # User configuration (auto-generated)
 ├── resources/                     # UI resources
 │   ├── search_all/               # Search All button icons
 │   ├── youtube/                  # YouTube button icons
@@ -111,7 +111,7 @@ Fusion Smart Search/
 
 ### Configuration File Format
 
-The `qa_config.json` file stores user preferences:
+The `config.json` file stores user preferences:
 ```json
 {
   "services": {
@@ -154,7 +154,7 @@ You can easily modify this add-in to:
 - Use Autodesk Fusion's **Text Commands** window to see error messages
 - Check the **Scripts and Add-Ins** dialog for add-in status
 - Review Python error messages in error dialog boxes
-- Inspect `qa_config.json` for configuration issues
+- Inspect `config.json` for configuration issues
 - Enable browser developer tools for HTML interface debugging
 - Use VS Code with the provided `.vscode/launch.json` configuration
 
@@ -176,7 +176,7 @@ You can easily modify this add-in to:
 - Ensure the add-in is activated in Scripts and Add-Ins dialog
 - Restart Autodesk Fusion after installation
 - Check that all files are in the correct add-ins directory
-- Verify that services are enabled in `qa_config.json`
+- Verify that services are enabled in `config.json`
 
 **Settings palette doesn't open:**
 - Check that `Palette.html` exists in the add-in folder
@@ -186,8 +186,8 @@ You can easily modify this add-in to:
 
 **Configuration doesn't save:**
 - Check file permissions in the add-in directory
-- Ensure `qa_config.json` is not read-only
-- Try manually deleting `qa_config.json` and reconfiguring
+- Ensure `config.json` is not read-only
+- Try manually deleting `config.json` and reconfiguring
 
 **Browser doesn't open:**
 - Verify your default browser is set correctly in your OS
