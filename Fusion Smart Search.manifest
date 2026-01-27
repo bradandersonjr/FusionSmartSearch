@@ -1,0 +1,13 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"id":	"edae7804-57f3-433c-91b9-036230834e67",
+	"author":	"brad anderson jr",
+	"description":	{
+		"":	"Smart access to search YouTube, Facebook, Google, Autodesk Forums, Reddit, and AI assistants from the Fusion 360 toolbar"
+	},
+	"version":	"1.0.0",
+	"runOnStartup":	false,
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}

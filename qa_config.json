@@ -1,0 +1,12 @@
+{
+  "services": {
+    "youtube": true,
+    "facebook": true,
+    "google": true,
+    "forums": true,
+    "reddit": true,
+    "ai": true
+  },
+  "ai_assistant": "chatgpt",
+  "search_all_mode": false
+}

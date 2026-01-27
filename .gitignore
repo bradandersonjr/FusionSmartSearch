@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Generated HTML files
+Palette_temp.html
+
+# Configuration files (if they contain user-specific data)
+# Uncomment the next line if qa_config.json contains personal data
+# qa_config.json
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+# Keep .vscode/ since it contains useful Fusion 360 debug config
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

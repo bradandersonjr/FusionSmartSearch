@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Fusion Smart Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/icons@2.47.0/dist/tabler-icons.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom, #f9fafb, #ffffff);
+            min-height: 100vh;
+        }
+        .toggle-checkbox:checked {
+            background-color: #1f2937;
+            border-color: #1f2937;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            transform: translateX(1.25rem);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-gray-50 to-white p-3">
+    <div class="max-w-xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 mb-1.5">Fusion Smart Search</h1>
+            <p class="text-sm text-gray-600">Toggle services to show/hide toolbar buttons</p>
+        </div>
+
+        <!-- Search All Mode Card -->
+        <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5 mb-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 flex-1">
+                    <i class="ti ti-world-search w-6 h-6 text-purple-600" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <div class="text-sm font-bold text-gray-900">Search All Mode</div>
+                        <div class="text-xs text-gray-600">One button searches all enabled services at once</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleSearchAll" class="sr-only toggle-checkbox peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Services Card -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+                <label class="text-xs font-bold uppercase tracking-wider text-gray-700">
+                    Search Services
+                </label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleAllServices" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-4 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- YouTube Toggle -->
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <i class="ti ti-brand-youtube w-5 h-5 text-red-600" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900">YouTube</div>
+                        <div class="text-xs text-gray-500">Search videos on YouTube</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleYouTube" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- Facebook Toggle -->
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <i class="ti ti-brand-facebook w-5 h-5 text-blue-600" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900">Facebook</div>
+                        <div class="text-xs text-gray-500">Search posts on Facebook</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleFacebook" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- Google Toggle -->
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <i class="ti ti-brand-google w-5 h-5 text-green-600" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900">Google</div>
+                        <div class="text-xs text-gray-500">Search the web with Google</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleGoogle" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- Autodesk Forums Toggle -->
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <i class="ti ti-message w-5 h-5 text-orange-600" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900">Autodesk Forums</div>
+                        <div class="text-xs text-gray-500">Search Autodesk community forums</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleForums" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- Reddit Toggle -->
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <i class="ti ti-brand-reddit w-5 h-5 text-orange-500" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900">Reddit</div>
+                        <div class="text-xs text-gray-500">Search discussions on Reddit</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleReddit" class="sr-only toggle-checkbox peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                </label>
+            </div>
+
+            <!-- AI Assistant Selection -->
+            <div class="py-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-3">
+                        <i class="ti ti-sparkles w-5 h-5 text-purple-600" style="font-size: 1.25rem;"></i>
+                        <div>
+                            <div class="text-sm font-semibold text-gray-900">AI Assistant</div>
+                            <div class="text-xs text-gray-500">Choose your preferred AI assistant</div>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleAI" class="sr-only toggle-checkbox peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+                    </label>
+                </div>
+                <div class="pl-8">
+                    <select id="aiAssistant" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white">
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="perplexity">Perplexity</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+            <div class="flex items-start gap-3">
+                <i class="ti ti-info-circle w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" style="font-size: 1.25rem;"></i>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-semibold text-blue-900 mb-1">Quick Access Toolbar</p>
+                    <p class="text-xs text-blue-700">Enabled services will appear as buttons in the top right toolbar. Toggle off any services you don't use to keep your toolbar clean.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <button
+            onclick="savePreferences()"
+            class="w-full h-11 px-5 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 active:bg-gray-950 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 shadow-sm"
+        >
+            Save Settings
+        </button>
+
+        <!-- Footer -->
+        <div class="mt-6 pt-5 border-t border-gray-200 text-center">
+            <p class="text-xs text-gray-600">
+                Made by <a href="#" onclick="openUrl('https://www.bradandersonjr.com'); return false;" class="text-gray-900 hover:text-gray-700 font-medium underline cursor-pointer">@bradandersonjr</a>
+            </p>
+            <p class="text-xs text-gray-500 mt-1.5">
+                If you'd like to support the project, you can go to my <a href="#" onclick="openUrl('https://ko-fi.com/bradandersonjr'); return false;" class="text-gray-700 hover:text-gray-900 font-medium underline cursor-pointer">Ko-fi</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 right-6 bg-gray-900 text-white px-5 py-4 rounded-xl shadow-2xl transform transition-transform duration-300 ease-in-out flex items-center gap-3 min-w-64" style="transform: translateX(200%);">
+        <i class="ti ti-circle-check w-6 h-6 text-green-400" style="font-size: 1.5rem;"></i>
+        <span id="toastMessage" class="text-sm font-medium">Settings saved successfully!</span>
+    </div>
+
+    <script>
+
+        // Configuration state
+        const configState = { loaded: false, requested: false };
+
+        // Service toggles state
+        const serviceToggles = {
+            youtube: true,
+            facebook: true,
+            google: true,
+            forums: true,
+            reddit: true,
+            ai: true
+        };
+
+        let selectedAiAssistant = 'chatgpt';
+        let searchAllMode = false;
+
+        function applyInjectedConfig() {
+            if (!window.FUSION_QA_CONFIG) {
+                return false;
+            }
+            updateSettings(
+                window.FUSION_QA_CONFIG.services || {},
+                window.FUSION_QA_CONFIG.ai_assistant || 'chatgpt',
+                window.FUSION_QA_CONFIG.search_all_mode || false
+            );
+            return true;
+        }
+
+        // Load configuration once per session
+        function loadConfigOnce() {
+            if (configState.loaded || configState.requested) {
+                return;
+            }
+
+            if (applyInjectedConfig()) {
+                return;
+            }
+
+            // Request the current configuration from Fusion
+            if (window.adsk && window.adsk.fusionSendData) {
+                try {
+                    configState.requested = true;
+                    window.adsk.fusionSendData('getConfig', '');
+                } catch (e) {
+                    configState.requested = false;
+                }
+            }
+        }
+
+        // Load config from injected JavaScript variable immediately
+        applyInjectedConfig();
+
+        // Load configuration once on page load
+        window.addEventListener('load', function() {
+            loadConfigOnce();
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Ctrl/Cmd+S to save
+            if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                savePreferences();
+            }
+            // Enter key to save
+            else if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+                const activeElement = document.activeElement;
+                if (activeElement.tagName !== 'BUTTON' && activeElement.tagName !== 'SELECT') {
+                    event.preventDefault();
+                    savePreferences();
+                }
+            }
+        });
+
+        // Handle messages from Autodesk Fusion via postMessage
+        window.addEventListener('message', function(event) {
+            try {
+                let data;
+                if (typeof event.data === 'string') {
+                    data = JSON.parse(event.data);
+                } else {
+                    data = event.data;
+                }
+                if (data && data.action === 'setConfig') {
+                    updateSettings(data.services || {}, data.ai_assistant || 'chatgpt', data.search_all_mode || false);
+                }
+            } catch (e) {
+                // Silent fail
+            }
+        });
+
+        // Function callable from Python
+        window.setConfig = function(data) {
+            if (typeof data === 'string') {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    return;
+                }
+            }
+            if (data && data.action === 'setConfig') {
+                updateSettings(data.services || {}, data.ai_assistant || 'chatgpt', data.search_all_mode || false);
+            } else if (data && data.services !== undefined) {
+                updateSettings(data.services || {}, data.ai_assistant || 'chatgpt', data.search_all_mode || false);
+            }
+        };
+
+        function updateSettings(services, aiAssistant, searchAll) {
+            configState.loaded = true;
+            configState.requested = false;
+
+            // Update search all mode
+            if (searchAll !== undefined) {
+                searchAllMode = searchAll;
+                document.getElementById('toggleSearchAll').checked = searchAll;
+            }
+
+            // Update service toggles
+            if (services.youtube !== undefined) {
+                serviceToggles.youtube = services.youtube;
+                document.getElementById('toggleYouTube').checked = services.youtube;
+            }
+            if (services.facebook !== undefined) {
+                serviceToggles.facebook = services.facebook;
+                document.getElementById('toggleFacebook').checked = services.facebook;
+            }
+            if (services.google !== undefined) {
+                serviceToggles.google = services.google;
+                document.getElementById('toggleGoogle').checked = services.google;
+            }
+            if (services.forums !== undefined) {
+                serviceToggles.forums = services.forums;
+                document.getElementById('toggleForums').checked = services.forums;
+            }
+            if (services.reddit !== undefined) {
+                serviceToggles.reddit = services.reddit;
+                document.getElementById('toggleReddit').checked = services.reddit;
+            }
+            if (services.ai !== undefined) {
+                serviceToggles.ai = services.ai;
+                document.getElementById('toggleAI').checked = services.ai;
+            }
+
+            // Update AI assistant selection
+            if (aiAssistant) {
+                selectedAiAssistant = aiAssistant;
+                document.getElementById('aiAssistant').value = aiAssistant;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+
+            // Slide toast in from the right
+            toast.style.transform = 'translateX(0)';
+
+            // Slide out after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateX(200%)';
+            }, 3000);
+        }
+
+        function openUrl(url) {
+            if (window.adsk && window.adsk.fusionSendData) {
+                window.adsk.fusionSendData('openUrl', url);
+            }
+        }
+
+        function savePreferences() {
+            // Get current toggle states
+            const preferences = {
+                services: {
+                    youtube: document.getElementById('toggleYouTube').checked,
+                    facebook: document.getElementById('toggleFacebook').checked,
+                    google: document.getElementById('toggleGoogle').checked,
+                    forums: document.getElementById('toggleForums').checked,
+                    reddit: document.getElementById('toggleReddit').checked,
+                    ai: document.getElementById('toggleAI').checked
+                },
+                ai_assistant: document.getElementById('aiAssistant').value,
+                search_all_mode: document.getElementById('toggleSearchAll').checked
+            };
+
+            if (window.adsk && window.adsk.fusionSendData) {
+                window.adsk.fusionSendData('savePreferences', JSON.stringify(preferences));
+
+                // Count enabled services
+                const enabledCount = Object.values(preferences.services).filter(v => v).length;
+                const modeText = preferences.search_all_mode ? ' (Search All Mode)' : '';
+                showToast(`Settings saved! ${enabledCount} service${enabledCount !== 1 ? 's' : ''} enabled${modeText}`);
+            }
+        }
+
+        // Update search all mode when toggle changes
+        document.getElementById('toggleSearchAll').addEventListener('change', function(e) {
+            searchAllMode = e.target.checked;
+        });
+
+        // Update service toggles state when checkboxes change
+        document.getElementById('toggleYouTube').addEventListener('change', function(e) {
+            serviceToggles.youtube = e.target.checked;
+        });
+        document.getElementById('toggleFacebook').addEventListener('change', function(e) {
+            serviceToggles.facebook = e.target.checked;
+        });
+        document.getElementById('toggleGoogle').addEventListener('change', function(e) {
+            serviceToggles.google = e.target.checked;
+        });
+        document.getElementById('toggleForums').addEventListener('change', function(e) {
+            serviceToggles.forums = e.target.checked;
+        });
+        document.getElementById('toggleReddit').addEventListener('change', function(e) {
+            serviceToggles.reddit = e.target.checked;
+        });
+        document.getElementById('toggleAI').addEventListener('change', function(e) {
+            serviceToggles.ai = e.target.checked;
+        });
+        document.getElementById('aiAssistant').addEventListener('change', function(e) {
+            selectedAiAssistant = e.target.value;
+        });
+
+        // Master toggle for all services
+        document.getElementById('toggleAllServices').addEventListener('change', function(e) {
+            const isChecked = e.target.checked;
+
+            // Update all service checkboxes
+            document.getElementById('toggleYouTube').checked = isChecked;
+            document.getElementById('toggleFacebook').checked = isChecked;
+            document.getElementById('toggleGoogle').checked = isChecked;
+            document.getElementById('toggleForums').checked = isChecked;
+            document.getElementById('toggleReddit').checked = isChecked;
+            document.getElementById('toggleAI').checked = isChecked;
+
+            // Update service toggles state
+            serviceToggles.youtube = isChecked;
+            serviceToggles.facebook = isChecked;
+            serviceToggles.google = isChecked;
+            serviceToggles.forums = isChecked;
+            serviceToggles.reddit = isChecked;
+            serviceToggles.ai = isChecked;
+        });
+
+        // Helper function to update master toggle based on individual services
+        function updateMasterToggle() {
+            const allChecked =
+                document.getElementById('toggleYouTube').checked &&
+                document.getElementById('toggleFacebook').checked &&
+                document.getElementById('toggleGoogle').checked &&
+                document.getElementById('toggleForums').checked &&
+                document.getElementById('toggleReddit').checked &&
+                document.getElementById('toggleAI').checked;
+
+            document.getElementById('toggleAllServices').checked = allChecked;
+        }
+
+        // Update master toggle when any individual service changes
+        ['toggleYouTube', 'toggleFacebook', 'toggleGoogle', 'toggleForums', 'toggleReddit', 'toggleAI'].forEach(function(toggleId) {
+            document.getElementById(toggleId).addEventListener('change', updateMasterToggle);
+        });
+
+        // Initialize master toggle state on load
+        updateMasterToggle();
+    </script>
+</body>
+</html>
