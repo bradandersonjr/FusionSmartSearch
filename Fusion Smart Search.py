@@ -162,6 +162,14 @@ DEFAULT_CONFIG = {
 PALETTE_WIDTH = 560
 PALETTE_HEIGHT = 800
 
+# The built React app, not a hand-written page. `ui/` is the source; `npm run
+# build` emits ui_dist/ and that output IS committed, so the add-in works from
+# a fresh clone with no build step for the user. Resolved absolutely, with
+# forward slashes, the same way BradsUtilityToolbox's palette entry point
+# resolves its own ui_dist/index.html.
+ADDIN_ROOT = os.path.dirname(os.path.realpath(__file__))
+PALETTE_URL = os.path.join(ADDIN_ROOT, 'ui_dist', 'index.html').replace('\\', '/')
+
 # Message box constants
 MSG_BOX_OK_ONLY = 0
 MSG_BOX_INFO_ICON = 0
@@ -182,6 +190,12 @@ palette = None
 # Store command definitions and controls for cleanup
 service_commands = {}
 service_controls = {}
+
+# Whether the palette's page has announced itself via the 'ready' handshake
+# and can receive pushes. Not the same as palette.isVisible: a docked palette
+# can be visible before its page has finished loading its JS and wired up its
+# message handler, and pushing into that gap silently drops the message.
+_ready = False
 
 # ============================================================================
 # CONFIGURATION MANAGEMENT
@@ -317,28 +331,35 @@ def show_error_message(ui: Optional[adsk.core.UserInterface], error_message: str
         ui.messageBox(error_message, ADDIN_NAME, MSG_BOX_OK_ONLY, MSG_BOX_INFO_ICON)
 
 
-def send_config_to_palette(palette_instance: adsk.core.Palette) -> None:
+def push_state() -> None:
     """
-    Sends the current configuration to the HTML palette.
+    Sends the current settings to the palette's React app, if it is open and
+    has announced itself ready.
 
-    Args:
-        palette_instance (adsk.core.Palette): The palette to send config to
+    This is the async PUSH_STATE push in reply to the page's 'ready' message
+    -- the same contract BradsUtilityToolbox's palette uses. There is no
+    synchronous return-data path: the page always asks and Python always
+    answers by pushing, which is simpler than trying to race a reply back
+    through HTMLEventArgs.returnData.
     """
-    if palette_instance and palette_instance.isVisible:
-        try:
-            config = load_config()
+    global palette
 
-            config_data = json.dumps({
-                'action': 'setConfig',
-                'services': config.get('services', DEFAULT_CONFIG['services']),
-                'ai_assistant': config.get('ai_assistant', DEFAULT_CONFIG['ai_assistant']),
-                'search_all_mode': config.get('search_all_mode', DEFAULT_CONFIG['search_all_mode'])
-            })
-            palette_instance.sendInfoToHTML('setConfig', config_data)
+    if not palette or not _ready:
+        return
 
-        except Exception:
-            # Silently fail if palette is not ready
-            pass
+    try:
+        config = load_config()
+
+        payload = json.dumps({
+            'services': config.get('services', DEFAULT_CONFIG['services']),
+            'ai_assistant': config.get('ai_assistant', DEFAULT_CONFIG['ai_assistant']),
+            'search_all_mode': config.get('search_all_mode', DEFAULT_CONFIG['search_all_mode'])
+        })
+        palette.sendInfoToHTML('PUSH_STATE', payload)
+
+    except Exception:
+        # A closed or reloading palette is not a failure worth reporting.
+        pass
 
 
 # ============================================================================
@@ -365,25 +386,16 @@ class PaletteCommandHandler(adsk.core.HTMLEventHandler):
             htmlArgs = adsk.core.HTMLEventArgs.cast(args)
             action = htmlArgs.action
 
-            if action == 'getConfig':
-                # Return current configuration to the palette
-                config = load_config()
-
-                return_data = json.dumps({
-                    'action': 'setConfig',
-                    'services': config.get('services', DEFAULT_CONFIG['services']),
-                    'ai_assistant': config.get('ai_assistant', DEFAULT_CONFIG['ai_assistant']),
-                    'search_all_mode': config.get('search_all_mode', DEFAULT_CONFIG['search_all_mode'])
-                })
-                htmlArgs.returnData = return_data
-
-                # Also send via sendInfoToHTML as backup method
-                try:
-                    global palette
-                    if palette and palette.isVisible:
-                        palette.sendInfoToHTML('setConfig', return_data)
-                except Exception:
-                    pass
+            if action == 'ready':
+                # The page can receive messages now; reply with the current
+                # settings. Idempotent and safe to receive more than once --
+                # the page re-sends 'ready' with a backoff until this arrives,
+                # because palettes.add() can start loading the page before
+                # incomingFromHTML is wired on the next line, and a fast page
+                # can announce itself into that gap.
+                global _ready
+                _ready = True
+                push_state()
 
             elif action == 'savePreferences':
                 # Save user's updated preferences
@@ -432,7 +444,11 @@ class PaletteClosedHandler(adsk.core.UserInterfaceGeneralEventHandler):
             args (adsk.core.UserInterfaceGeneralEventArgs): Event arguments
         """
         try:
-            # No action needed when palette is closed
+            # _ready is deliberately NOT cleared here. Fusion raises this
+            # event when a docked palette is merely collapsed too, and the
+            # page is still alive underneath -- clearing it would drop every
+            # push until the user reopens the palette. A genuinely destroyed
+            # page re-announces itself through 'ready' when it reloads.
             pass
         except Exception:
             pass
@@ -624,9 +640,9 @@ class SettingsHandler(adsk.core.CommandEventHandler):
                     was_visible = palette.isVisible
                     palette.isVisible = not was_visible
 
-                    # Send fresh config when showing palette
+                    # Send fresh state when showing palette
                     if palette.isVisible:
-                        send_config_to_palette(palette)
+                        push_state()
                 except RuntimeError:
                     # Palette is in an invalid state - recreate it
                     palette = None
@@ -642,7 +658,7 @@ class SettingsHandler(adsk.core.CommandEventHandler):
                     # Palette exists but was hidden - show it
                     try:
                         palette.isVisible = True
-                        send_config_to_palette(palette)
+                        push_state()
                     except RuntimeError:
                         # Palette is invalid - recreate it
                         palette = None
@@ -654,71 +670,31 @@ class SettingsHandler(adsk.core.CommandEventHandler):
 
     def _create_palette(self) -> adsk.core.Palette:
         """
-        Creates and configures the HTML-based settings palette.
+        Creates and configures the settings palette, pointed at the built
+        React app (ui_dist/index.html) rather than a hand-written page.
 
         Returns:
             adsk.core.Palette: The newly created palette instance
         """
-        # Get the HTML file path
-        addin_dir = os.path.dirname(os.path.realpath(__file__))
+        global _ready
 
-        # Find the HTML file
-        html_file = None
-        possible_names = ['Palette.html', 'palette.html']
-        for name in possible_names:
-            test_path = os.path.join(addin_dir, name)
-            if os.path.exists(test_path):
-                html_file = test_path
-                break
+        # A freshly created page has not announced itself yet -- pushing
+        # before that would be dropped, so state is sent only once the page's
+        # own 'ready' handshake arrives (see PaletteCommandHandler.notify).
+        _ready = False
 
-        if not html_file:
-            html_file = os.path.join(addin_dir, 'Palette.html')
-
-        # Create a temporary HTML file with injected config
-        temp_html_file = os.path.join(addin_dir, 'Palette_temp.html')
-
-        try:
-            # Read the template HTML
-            with open(html_file, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-
-            # Load current config
-            config = load_config()
-
-            config_json = json.dumps({
-                'services': config.get('services', DEFAULT_CONFIG['services']),
-                'ai_assistant': config.get('ai_assistant', DEFAULT_CONFIG['ai_assistant']),
-                'search_all_mode': config.get('search_all_mode', DEFAULT_CONFIG['search_all_mode'])
-            })
-
-            # Inject config as a script tag
-            injection = f'''<head>
-    <script>
-        window.FUSION_SEARCH_CONFIG = {config_json};
-    </script>'''
-
-            html_content = html_content.replace('<head>', injection, 1)
-
-            # Write temporary HTML file
-            with open(temp_html_file, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-
-            html_file_url = temp_html_file.replace('\\', '/')
-
-        except Exception:
-            # If injection fails, fall back to original HTML
-            html_file_url = html_file.replace('\\', '/')
-
-        # Create the palette
+        # Create the palette. useNewWebBrowser=True: the built React bundle
+        # loads as an ES module, which the legacy embedded browser can't run.
         new_palette = self.ui.palettes.add(
             PALETTE_ID,
             'Fusion Smart Search Settings',
-            html_file_url,
+            PALETTE_URL,
             True,  # Show palette immediately
             True,  # Show close button
             True,  # Can be resized by user
             PALETTE_WIDTH,
-            PALETTE_HEIGHT
+            PALETTE_HEIGHT,
+            True   # useNewWebBrowser
         )
 
         # Register HTML event handler
@@ -733,9 +709,6 @@ class SettingsHandler(adsk.core.CommandEventHandler):
 
         # Dock palette on the left side
         new_palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateLeft
-
-        # Send initial configuration
-        send_config_to_palette(new_palette)
 
         return new_palette
 
@@ -1018,19 +991,11 @@ def stop(context: Dict[str, Any]) -> None:
         # CLEANUP PALETTE
         # ====================================================================
 
-        global palette
+        global palette, _ready
         if palette:
             palette.deleteMe()
             palette = None
-
-        # Clean up temporary HTML file
-        addin_dir = os.path.dirname(os.path.realpath(__file__))
-        temp_html_file = os.path.join(addin_dir, 'Palette_temp.html')
-        try:
-            if os.path.exists(temp_html_file):
-                os.remove(temp_html_file)
-        except Exception:
-            pass
+        _ready = False
 
         # ====================================================================
         # CLEANUP SERVICE BUTTONS

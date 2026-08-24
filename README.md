@@ -10,7 +10,7 @@ A professional Autodesk Fusion add-in that provides quick access to search multi
 - **Google** - General web search with Fusion 360 context
 - **Autodesk Forums** - Official Fusion 360 community forums
 - **Reddit** - r/Fusion360 and related subreddits
-- **AI Assistants** - Quick access to ChatGPT, Claude, or Perplexity
+- **AI Assistants** - Quick access to ChatGPT, Claude, Gemini, or Perplexity
 - **Configurable services** - Enable/disable individual search services
 - **Modern HTML interface** with intuitive controls
 - **Persistent configuration** - Settings save automatically across sessions
@@ -46,13 +46,13 @@ A professional Autodesk Fusion add-in that provides quick access to search multi
 - **Google** - Web search with "Fusion 360" context
 - **Forums** - Searches Autodesk's official Fusion 360 forums
 - **Reddit** - Searches r/Fusion360 and related communities
-- **AI Assistant** - Opens your preferred AI assistant (ChatGPT, Claude, or Perplexity)
+- **AI Assistant** - Opens your preferred AI assistant (ChatGPT, Claude, Gemini, or Perplexity)
 
 ### Configuring Settings
 
 Access the settings palette to:
 - **Enable/disable individual search services** - Toggle which buttons appear in your toolbar
-- **Choose your AI assistant** - Select between ChatGPT, Claude, or Perplexity
+- **Choose your AI assistant** - Select between ChatGPT, Claude, Gemini, or Perplexity
 - **Configure Search All mode** - Choose whether "Search All" opens all services or just opens the settings
 
 Settings are saved automatically and persist across Fusion 360 sessions.
@@ -61,9 +61,11 @@ Settings are saved automatically and persist across Fusion 360 sessions.
 
 ### Architecture
 - Built on Autodesk Fusion's **Command and Event Handler** architecture
-- Modern **HTML5-based interface** with responsive design
+- Settings UI is a **React + shadcn/ui app** (`ui/`, built to `ui_dist/`),
+  matching the author's other Fusion add-ins for visual consistency
 - **JSON-based configuration management** for persistent settings
-- Dynamic HTML generation with injected configuration
+- Palette ↔ Python messaging via a small `ready` / `PUSH_STATE` handshake
+  (see `ui/README.md`) -- no HTML injection or temp files involved
 - Platform-specific browser integration via Python's `webbrowser` module
 - Follows Autodesk Fusion add-in **best practices** for UI integration and cleanup
 
@@ -73,24 +75,24 @@ Settings are saved automatically and persist across Fusion 360 sessions.
 - **Command handlers** for each search service button
 - **Settings palette handler** manages the configuration interface
 - **Configuration system** with load/save functions
-- **Dynamic HTML injection** to pass config to frontend
 - **URL generation** for each search platform
 - **Toolbar button management** based on enabled services
 
-#### HTML Frontend
-- **Responsive settings interface** with modern design
-- **Service toggles** for each search platform
-- **AI assistant selector** with three options
-- **Real-time configuration updates** between UI and backend
-- **Icon system** for visual clarity
+#### React Frontend (`ui/`)
+- **Responsive settings interface** built with React, Tailwind and shadcn/ui
+- **Service toggles** for each search platform, including a master toggle
+- **AI assistant selector** with four options (ChatGPT, Claude, Gemini, Perplexity)
+- **Live configuration sync** with Python via `sendInfoToHTML`/`fusionSendData`
+- **Fusion-themed** -- follows Fusion's Dark Blue/Dark Gray/Light palettes
 
 ### Code Structure
 ```
 Fusion Smart Search/
 ├── Fusion Smart Search.py          # Main add-in code
-├── Fusion Smart Search.manifest    # Add-in configuration (v1.0.0)
-├── Palette.html                    # Settings UI template
-├── Palette_temp.html              # Generated HTML (auto-created, ignored by git)
+├── Fusion Smart Search.manifest    # Add-in configuration
+├── ui/                             # React + shadcn/ui settings palette (source)
+│   └── README.md                  # UI build instructions & Python message contract
+├── ui_dist/                        # Built palette (committed -- what Fusion loads)
 ├── config.json                 # User configuration (auto-generated)
 ├── resources/                     # UI resources
 │   ├── search_all/               # Search All button icons
@@ -128,7 +130,7 @@ The `config.json` file stores user preferences:
 ```
 
 - `services`: Object with boolean values for each search service
-- `ai_assistant`: String value - "chatgpt", "claude", or "perplexity"
+- `ai_assistant`: String value - "chatgpt", "claude", "gemini", or "perplexity"
 - `search_all_mode`: Boolean - true to open all services, false to open settings
 
 ## Development
@@ -137,13 +139,14 @@ The `config.json` file stores user preferences:
 - **Autodesk Fusion** (any recent version with Python API support)
 - **Python knowledge** for modifications (uses Python 3.7+)
 - **Basic understanding** of Autodesk Fusion's API architecture
-- **HTML/CSS/JavaScript** knowledge for UI modifications
+- **Node.js and React** knowledge for UI modifications -- see `ui/README.md`
 
 ### Customization
 
 You can easily modify this add-in to:
 - Add new search services (add button handler and resources)
-- Change the palette UI design (edit `Palette.html`)
+- Change the palette UI design (edit `ui/src/`, then `npm run build` in `ui/`
+  and commit the updated `ui_dist/`)
 - Modify search URLs and queries
 - Customize button icons (replace files in `resources/`)
 - Add keyboard shortcuts
@@ -155,7 +158,8 @@ You can easily modify this add-in to:
 - Check the **Scripts and Add-Ins** dialog for add-in status
 - Review Python error messages in error dialog boxes
 - Inspect `config.json` for configuration issues
-- Enable browser developer tools for HTML interface debugging
+- Run `npm run dev` in `ui/` to work on the settings UI in an ordinary
+  browser, with a mock settings state standing in for Fusion
 - Use VS Code with the provided `.vscode/launch.json` configuration
 
 ## Platform-Specific Features
@@ -179,10 +183,10 @@ You can easily modify this add-in to:
 - Verify that services are enabled in `config.json`
 
 **Settings palette doesn't open:**
-- Check that `Palette.html` exists in the add-in folder
+- Check that `ui_dist/index.html` exists in the add-in folder (run
+  `npm run build` inside `ui/` if it's missing)
 - Review error messages in Autodesk Fusion's Text Commands window
 - Try restarting the add-in
-- Delete `Palette_temp.html` if it exists and try again
 
 **Configuration doesn't save:**
 - Check file permissions in the add-in directory

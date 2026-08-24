@@ -5,9 +5,6 @@ __pycache__/
 *.so
 .Python
 
-# Generated HTML files
-Palette_temp.html
-
 # Configuration files (if they contain user-specific data)
 # Uncomment the next line if config.json contains personal data
 # config.json
@@ -26,3 +23,9 @@ desktop.ini
 
 # Logs
 *.log
+
+# Node / UI. ui/ is the source; ui_dist/ is the build output and IS
+# committed, so the add-in loads from a fresh clone without anyone running
+# npm.
+ui/node_modules/
+ui/.vite/
