@@ -1,0 +1,1004 @@
+/* AIW palette design system.
+ *
+ * CANONICAL COPY: _templates/palette/palette.css
+ * Vendored per add-in like lib/fusionAddInUtils. Never edit this file inside a
+ * project -- change the canonical copy and re-vendor, so drift stays
+ * detectable by _tools/palette_check.py.
+ *
+ * Every neutral below is read from Fusion's own theme files, so a docked
+ * palette matches the panels beside it rather than approximating them:
+ *
+ *   %LOCALAPPDATA%\Autodesk\webdeploy\production\<build>\*.xbel
+ *
+ * Re-derive them after a Fusion update with:
+ *   python _tools/extract_fusion_theme.py
+ *
+ * No CDN, no web fonts, no build step. Fusion runs offline routinely and a
+ * palette that needs the network is a palette that fails on a plane.
+ */
+
+/* ── Tokens ───────────────────────────────────────────────────────────── */
+
+/* Dark Blue is Fusion's default and the fallback when the host theme cannot
+ * be read.
+ *
+ * The panel token is WidgetContainer1, NOT BrowserBackgroundColor -- that one
+ * is the 3D canvas and stays neutral gray even in Dark Blue, which is exactly
+ * how a blue-tinted theme ends up rendering as gray. WidgetContainer1 is the
+ * only token that tracks all three themes. */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="dark-blue"] {
+  /* Fusion DarkTheme.xbel */
+  --aiw-bg:              #3B4453;  /* WidgetContainer1 */
+  --aiw-surface:         #454F61;  /* MBHeaderViewBackground */
+  --aiw-surface-hover:   #4E5A6E;  /* SearchBoxHoverBackground */
+  --aiw-surface-sunken:  #2E3440;  /* HeaderBorderTop -- inputs sit below */
+  --aiw-border:          #232833;  /* 1.50:1 page, 1.79:1 card */
+  --aiw-border-strong:   #98A3B6;  /* 3.24:1 on surface -- control outlines */
+
+  --aiw-text:            #D9D9D9;  /* FontActive2 -- 5.80:1 on surface */
+  --aiw-text-muted:      #C6C6C6;  /* 4.80:1 on surface */
+  --aiw-text-disabled:   #9A9A9A;
+
+  /* 5.27:1 on bg, 4.95:1 on surface. Real but not luxurious, which is why
+   * amber is never used for body text on either theme. */
+  --aiw-accent:          #FCBF47;
+  --aiw-accent-border:   transparent;
+
+  /* The primary slab: maximum contrast against the surface, not the brand
+   * colour. Inverted per theme -- a near-black slab is 2.15:1 on a dark card
+   * and would disappear. */
+  --aiw-solid:           #E8E8E8;  /* 6.74:1 on the card */
+  --aiw-solid-hover:     #F5F5F5;
+  --aiw-solid-text:      #1A1A1A;  /* 14.2:1 on the slab */
+
+  /* Lighter than Fusion's own equivalents: these are read against the card
+   * (#4F4F4F), not the page, and Fusion's FontActive1 is only 3.98:1 there. */
+  --aiw-danger:          #FFB3AE;  /* 4.80:1 on surface */
+  --aiw-success:         #7BD88F;  /* 4.70:1 on surface */
+  --aiw-info:            #A3CFFF;  /* 5.04:1 on surface */
+
+  --aiw-focus:           #FCBF47;
+  --aiw-focus-inner:     transparent;
+
+  --aiw-track-off:       #6E6E6E;
+  --aiw-thumb:           #EDEDED;
+  --aiw-thumb-on:        #1A1A1A;  /* 10.51:1 on amber */
+  --aiw-track-on:        #FCBF47;  /* brand amber, all themes */
+
+}
+
+/* Fusion DarkGrayTheme.xbel -- the hidden theme, reachable only by
+ * Options.Set WeaveTheme weave-dark-gray. A genuinely separate set: its panel
+ * is #535353 against Dark Blue's #3B4453. Only the neutrals differ; every
+ * text, accent and semantic value is inherited from the block above. */
+:root[data-theme="dark-gray"] {
+  --aiw-bg:              #535353;  /* WidgetContainer1 */
+  --aiw-surface:         #474747;  /* MBHeaderViewBackground */
+  --aiw-surface-hover:   #5E5E5E;
+  --aiw-surface-sunken:  #202020;  /* SearchBoxNormalBackground */
+  /* Lighter, not darker: this theme's card is darker than its page. */
+  --aiw-border:          #787878;  /* 1.74:1 page, 2.10:1 card */
+  --aiw-border-strong:   #9A9A9A;
+}
+
+:root[data-theme="light"] {
+  /* Fusion LightTheme.xbel.
+   *
+   * The page/surface pair does NOT come from the same two tokens the dark
+   * themes use. Light's WidgetContainer1 is #FEFEFE and MBHeaderViewBackground
+   * is #FFFFFF -- 1.01:1 apart, so cards would be invisible against the page.
+   * Light instead uses the panel-chrome value Fusion agrees on across
+   * DropDownMenuBackground, Container1 and MenuBuiltInBackgroundColor1, which
+   * separates from the card by 1.14:1 -- in line with the darks' 1.19 and
+   * 1.21. */
+  --aiw-bg:              #EFEFEF;  /* DropDownMenuBackground / Container1 */
+  --aiw-surface:         #FEFEFE;  /* WidgetContainer1 -- Fusion has no #FFF */
+  --aiw-surface-hover:   #F5F5F5;  /* ScrollBarBackground */
+  --aiw-surface-sunken:  #FFFFFF;
+  --aiw-border:          #C4C4C4;  /* 1.52:1 page, 1.73:1 card */
+  --aiw-border-strong:   #8A8A8A;  /* 3.45:1 on surface */
+
+  --aiw-text:            #191919;  /* FontActive2 -- 17.43:1 on surface */
+  --aiw-text-muted:      #5A5A5A;  /* 6.84:1 on surface */
+  --aiw-text-disabled:   #8A8A8A;
+
+  /* Same hex as dark, but 1.44:1 against the surface -- unusable as text.
+   * On light amber is a fill or a rule only, never a text or link colour;
+   * --aiw-accent-border supplies the edge it cannot supply itself. */
+  --aiw-accent:          #FCBF47;
+  --aiw-accent-border:   #1A1A1A;  /* amber alone has no edge on light */
+
+  /* Near-black, exactly as the original palettes used. */
+  --aiw-solid:           #111827;  /* 17.59:1 on the card */
+  --aiw-solid-hover:     #1F2937;
+  --aiw-solid-text:      #FFFFFF;  /* 17.74:1 on the slab */
+
+  --aiw-danger:          #C62828;
+  --aiw-success:         #2E7D32;
+  --aiw-info:            #0160BF;  /* FontActive1 */
+
+  --aiw-focus:           #FCBF47;
+  --aiw-focus-inner:     #1A1A1A;  /* the ring that carries the contrast */
+
+  --aiw-track-off:       #8C8C8C;  /* 3.33:1 against the thumb */
+  --aiw-thumb:           #FEFEFE;
+  --aiw-thumb-on:        #1A1A1A;  /* dark on amber, as on the darks */
+  --aiw-track-on:        #FCBF47;  /* same amber, needs the border below */
+
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────
+ *
+ * This bar belongs to the palette's embedded browser, not to Fusion, so it is
+ * ours to style -- no iframe or custom scroll implementation needed. The
+ * default is a wide light-grey Windows bar that reads as a seam down the edge
+ * of the panel.
+ *
+ * The track is transparent so it disappears into the page, and the thumb is
+ * drawn from the border token so it sits at the same weight as the card edges
+ * rather than competing with them. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  /* The transparent border plus background-clip keeps the visible thumb at
+     6px while leaving a 10px grab target -- a 6px-wide bar is fiddly to hit. */
+  border: 2px solid transparent;
+  background: var(--aiw-border-strong);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover { background: var(--aiw-text-muted);
+  background-clip: content-box; }
+
+::-webkit-scrollbar-corner { background: transparent; }
+
+
+html { background: var(--aiw-bg); }
+
+/* A palette is resizable, and running text keeps getting longer as it widens.
+ * At the standard 560px docked width a card line is ~68 characters, which is
+ * comfortable; past ~760px it stops being. The cap only engages when someone
+ * drags the palette wider than that, so the default look is unaffected. */
+[data-aiw-content],
+.aiw-header,
+.aiw-footer { max-width: 760px; }
+
+body {
+  margin: 0;
+  /* The palette is usually taller than its content. Without this the host
+   * paints its own white below the last element. */
+  min-height: 100vh;
+  padding: 16px;
+  background: var(--aiw-bg);
+  color: var(--aiw-text);
+  /* System stack only. A web font is a network dependency, and the palette
+   * has to render identically offline. */
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Type ─────────────────────────────────────────────────────────────── */
+
+.aiw-eyebrow {
+  margin: 0 0 5px;
+  color: var(--aiw-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.aiw-h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.aiw-sub {
+  margin: 0 0 24px;
+  color: var(--aiw-text-muted);
+  font-size: 14px;
+}
+
+/* The masthead: an eyebrow, a title, and one amber rule beneath.
+ *
+ * This is the only place the brand colour appears as decoration. Putting it
+ * here rather than on every card means it identifies the tool once and then
+ * gets out of the way -- an accent repeated on every panel stops reading as an
+ * accent at all. Everything below the rule stays monochrome, so amber elsewhere
+ * always means "this does something". */
+.aiw-header { margin-bottom: 18px; }
+.aiw-header .aiw-sub { margin-bottom: 10px; }
+
+.aiw-header::after {
+  content: "";
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--aiw-accent);
+  /* On light the amber is 1.44:1 against the page and the rule would barely
+     register. The hairline supplies the edge, exactly as it does under the
+     toggle track and inside the focus ring; on dark the token is transparent
+     and the amber stands on its own. */
+  box-shadow: 0 0 0 1px var(--aiw-accent-border);
+}
+
+.aiw-label {
+  margin: 0 0 10px;
+  color: var(--aiw-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.aiw-help {
+  margin-top: 6px;
+  color: var(--aiw-text-muted);
+  font-size: 12px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────── */
+
+.aiw-card {
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 1px solid var(--aiw-border);
+  border-radius: 12px;
+  background: var(--aiw-surface);
+}
+
+/* No shadows anywhere. Fusion separates its own panels with a hairline rather
+ * than a drop shadow, and a floating card reads as a web page pasted into the
+ * application. That puts the whole job on --aiw-border: the card sits within
+ * ~1.2:1 of the page on every theme, so the border is tuned to clear 1.5:1
+ * against BOTH neighbours or the card edge disappears. */
+.aiw-card--flush { padding: 0; overflow: hidden; }
+
+.aiw-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 20px;
+}
+
+.aiw-row + .aiw-row { border-top: 1px solid var(--aiw-border); }
+.aiw-row .aiw-grow { flex: 1; min-width: 0; }
+.aiw-row-title { font-size: 15px; font-weight: 600; }
+
+/* ── Switch ───────────────────────────────────────────────────────────── */
+
+/* A real checkbox underneath, so it stays keyboard reachable and announces
+ * itself to a screen reader. The visible parts are siblings, not pseudo
+ * elements, so they can be styled per theme. */
+.aiw-switch {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 24px;
+}
+
+.aiw-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.aiw-track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--aiw-track-off);
+  transition: background .15s, border-color .15s;
+  pointer-events: none;
+}
+
+.aiw-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--aiw-thumb);
+  transition: transform .15s, background .15s;
+  pointer-events: none;
+}
+
+.aiw-switch input:checked ~ .aiw-track {
+  /* Amber is 1.44:1 on the light page and 1.64:1 on a light card, below the
+     3:1 a UI element needs. accent-border supplies the edge there and is
+     transparent on the darks, where the amber already carries itself. */
+  border-color: var(--aiw-accent-border);
+  background: var(--aiw-track-on);
+}
+
+.aiw-switch input:checked ~ .aiw-thumb {
+  background: var(--aiw-thumb-on);
+  transform: translateX(20px);
+}
+
+/* The off track is 2.52:1 on light, below the 3:1 a UI element needs, so it
+ * gets an outline there to make the boundary perceivable. */
+:root[data-theme="light"] .aiw-track { border-color: var(--aiw-border-strong); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+
+.aiw-btn {
+  height: 44px;
+  padding: 0 20px;
+  /* Filled rather than outlined: an outline under a 44px control reads thin
+   * and busy next to the solid primary. */
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--aiw-surface-hover);
+  color: var(--aiw-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aiw-btn:hover { background: var(--aiw-surface-sunken); }
+
+/* One class, one hex, both themes. --aiw-accent-border is transparent on dark
+ * and near-black on light, so the token does the theme work. */
+.aiw-btn--primary,
+.aiw-btn.is-selected {
+  border-color: var(--aiw-solid);
+  background: var(--aiw-solid);
+  color: var(--aiw-solid-text);
+}
+
+.aiw-btn--primary:hover,
+.aiw-btn.is-selected:hover {
+  border-color: var(--aiw-solid-hover);
+  background: var(--aiw-solid-hover);
+}
+
+.aiw-btn--danger {
+  border-color: var(--aiw-danger);
+  background: transparent;
+  color: var(--aiw-danger);
+}
+
+.aiw-btn--block { display: block; width: 100%; }
+
+.aiw-btn[disabled] { opacity: .45; pointer-events: none; }
+
+/* ── Fields ───────────────────────────────────────────────────────────── */
+
+.aiw-input,
+.aiw-select {
+  height: 44px;
+  padding: 0 14px;
+  border: 2px solid var(--aiw-border);
+  border-radius: 8px;
+  background: var(--aiw-surface-sunken);
+  color: var(--aiw-text);
+  font: inherit;
+}
+
+.aiw-select { padding-right: 30px; }
+.aiw-input--block { display: block; width: 100%; }
+.aiw-input::placeholder { color: var(--aiw-text-disabled); }
+.aiw-input[disabled],
+.aiw-select[disabled] { opacity: .45; pointer-events: none; }
+
+/* accent-color paints the checkbox fill natively, which is exactly the
+ * fill-only rule -- no custom control needed. */
+.aiw-check { accent-color: var(--aiw-accent); }
+
+/* ── Focus ────────────────────────────────────────────────────────────── */
+
+/* :focus-visible, not :focus, so a mouse click does not ring the control.
+ *
+ * On light an amber-only ring is 1.44:1 and effectively invisible, so the
+ * inner hairline is what a low-vision user actually perceives while amber
+ * stays as the brand cue. On dark the inner ring is transparent. */
+:focus-visible {
+  outline: 2px solid var(--aiw-focus);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 1px var(--aiw-focus-inner);
+}
+
+/* ── Disclosure ───────────────────────────────────────────────────────── */
+
+.aiw-details { border-top: 1px solid var(--aiw-border); }
+
+.aiw-details > summary {
+  padding: 12px 20px;
+  color: var(--aiw-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.aiw-details > summary:hover { color: var(--aiw-text); }
+.aiw-details-body { padding: 4px 20px 20px; }
+
+/* Kept visible but inert, so the list does not jump when a section is
+ * switched off and the settings are still discoverable. */
+.aiw-disabled { opacity: .45; pointer-events: none; }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+
+.aiw-footer {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--aiw-border);
+  color: var(--aiw-text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Links are never amber, on any theme. Making the rule unconditional means
+ * there is no theme-specific link colour to get wrong -- and on light, amber
+ * text is 1.44:1 and simply unreadable. */
+.aiw-link,
+.aiw-footer a {
+  color: var(--aiw-text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.aiw-link:hover,
+.aiw-footer a:hover { color: var(--aiw-text-muted); }
+
+/* The support line sits under the attribution and is dimmer: it is an offer,
+   not information the user needs. */
+.aiw-footer p { margin: 0; }
+.aiw-footer .aiw-footer-support {
+  margin-top: 6px;
+  /* muted, and no opacity on top: text-muted is already the secondary tone,
+     and dimming it further drops the support line below AA on two themes. */
+  color: var(--aiw-text-muted);
+}
+
+.aiw-footer-links { display: flex; gap: 14px; justify-content: center;
+  margin-top: 6px; }
+
+/* ── Toast ────────────────────────────────────────────────────────────── */
+
+/* Bottom anchored and full width. A top-right toast with a min-width overlays
+ * the header and clips once the palette is docked narrow. */
+.aiw-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--aiw-border-strong);
+  border-left-width: 4px;
+  border-radius: 12px;
+  background: var(--aiw-surface);
+  color: var(--aiw-text);
+  font-size: 13px;
+  transform: translateY(150%);
+  transition: transform .2s ease;
+}
+
+.aiw-toast.is-shown { transform: translateY(0); }
+
+/* Coloured edge rather than a coloured background: one geometry, one text
+ * colour, and no bespoke per-variant hex that needs a twin in the other theme. */
+.aiw-toast--success { border-left-color: var(--aiw-success); }
+.aiw-toast--error { border-left-color: var(--aiw-danger); }
+.aiw-toast--info { border-left-color: var(--aiw-info); }
+
+/* ── Segmented control ────────────────────────────────────────────────── */
+
+/* One choice from a small set, where a select would hide the options. Used by
+ * quality presets and open-method pickers. The selected segment is an amber
+ * fill, which is the fill-only rule doing exactly what it is for. */
+.aiw-segmented {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 8px;
+}
+
+.aiw-segmented > button {
+  flex: 1;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-right: 1px solid var(--aiw-border-strong);
+  background: var(--aiw-surface-hover);
+  color: var(--aiw-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aiw-segmented > button:last-child { border-right: 0; }
+
+/* A segment may carry a second line describing the choice -- "Fast" under
+   "Low". It inherits the segment's colour so it stays legible on the selected
+   slab as well as the unselected fill. */
+.aiw-segmented > button > small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: .75;
+}
+
+.aiw-segmented--stacked > button {
+  height: auto;
+  padding: 12px 16px;
+  line-height: 1.3;
+}
+.aiw-segmented > button:hover { background: var(--aiw-surface-sunken); }
+
+.aiw-segmented > button.is-selected {
+  background: var(--aiw-solid);
+  color: var(--aiw-solid-text);
+}
+
+/* ── Radio group ──────────────────────────────────────────────────────── */
+
+.aiw-radio { display: flex; gap: 8px; align-items: center; }
+.aiw-radio input { accent-color: var(--aiw-accent); margin: 0; }
+
+/* ── Textarea ─────────────────────────────────────────────────────────── */
+
+.aiw-textarea {
+  display: block;
+  width: 100%;
+  min-height: 88px;
+  padding: 10px 14px;
+  border: 2px solid var(--aiw-border);
+  border-radius: 8px;
+  background: var(--aiw-surface-sunken);
+  color: var(--aiw-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.aiw-textarea::placeholder { color: var(--aiw-text-disabled); }
+
+/* ── Tabs ─────────────────────────────────────────────────────────────── */
+
+/* An underline rather than a filled pill: amber is reserved for the one
+ * primary action on screen, and tabs are navigation, not commitment. */
+.aiw-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--aiw-border);
+  margin-bottom: 12px;
+}
+
+.aiw-tabs > button {
+  padding: 10px 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--aiw-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.aiw-tabs > button:hover { color: var(--aiw-text); }
+
+.aiw-tabs > button.is-selected {
+  border-bottom-color: var(--aiw-accent);
+  color: var(--aiw-text);
+  font-weight: 600;
+}
+
+/* ── Badge ────────────────────────────────────────────────────────────── */
+
+.aiw-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.aiw-badge--accent {
+  border-color: var(--aiw-solid);
+  background: var(--aiw-solid);
+  color: var(--aiw-solid-text);
+}
+
+.aiw-badge--danger { border-color: var(--aiw-danger); color: var(--aiw-danger); }
+.aiw-badge--success { border-color: var(--aiw-success); color: var(--aiw-success); }
+
+/* ── Table ────────────────────────────────────────────────────────────── */
+
+.aiw-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.aiw-table th,
+.aiw-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--aiw-border);
+  text-align: left;
+}
+
+.aiw-table th {
+  color: var(--aiw-text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.aiw-table tr:last-child td { border-bottom: 0; }
+.aiw-table--zebra tbody tr:nth-child(odd) { background: var(--aiw-surface-hover); }
+
+/* ── Notice ───────────────────────────────────────────────────────────── */
+
+/* An inline message that stays put, unlike a toast. Coloured left edge only,
+ * so one geometry covers every severity and nothing needs a per-theme tint. */
+.aiw-notice {
+  padding: 14px 16px;
+  border: 1px solid var(--aiw-border);
+  border-left: 4px solid var(--aiw-info);
+  border-radius: 8px;
+  background: var(--aiw-surface-hover);
+  font-size: 12px;
+}
+
+.aiw-notice--success { border-left-color: var(--aiw-success); }
+.aiw-notice--danger { border-left-color: var(--aiw-danger); }
+.aiw-notice--accent { border-left-color: var(--aiw-accent); }
+
+/* ── Progress ─────────────────────────────────────────────────────────── */
+
+.aiw-progress {
+  overflow: hidden;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--aiw-surface-sunken);
+  /* border-strong, not border: on light the amber fill is 1.66:1 against the
+   * track, so the outline is what makes the bar's extent perceivable -- the
+   * same reason the toggle gets --aiw-accent-border there. */
+  border: 1px solid var(--aiw-border-strong);
+}
+
+.aiw-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--aiw-solid);
+}
+
+/* Indeterminate: no width is known, so a segment sweeps instead. */
+.aiw-progress--busy > span {
+  width: 40%;
+  animation: aiw-sweep 1.1s ease-in-out infinite;
+}
+
+@keyframes aiw-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ── Spinner ──────────────────────────────────────────────────────────── */
+
+.aiw-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  /* The track is deliberately faint and the moving arc carries the contrast:
+   * amber against border-strong is under 2:1 on every theme, so the ring
+   * cannot be the thing you see. */
+  border: 2px solid var(--aiw-border);
+  border-top-color: var(--aiw-solid);
+  border-radius: 50%;
+  animation: aiw-spin .7s linear infinite;
+  vertical-align: -2px;
+}
+
+@keyframes aiw-spin { to { transform: rotate(360deg); } }
+
+/* ── Field ────────────────────────────────────────────────────────────── */
+
+/* Label, control, help text -- the shape most settings rows take. */
+.aiw-field { display: block; }
+.aiw-field > .aiw-label { margin-bottom: 4px; }
+
+/* ── Separator ────────────────────────────────────────────────────────── */
+
+.aiw-sep {
+  height: 1px;
+  margin: 20px 0;
+  border: 0;
+  background: var(--aiw-border);
+}
+
+/* ── Key ──────────────────────────────────────────────────────────────── */
+
+/* For naming a keyboard shortcut in help text. */
+.aiw-key {
+  display: inline-block;
+  min-width: 16px;
+  padding: 0 4px;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 3px;
+  background: var(--aiw-surface-sunken);
+  font-size: 10px;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* ── Overlay base ─────────────────────────────────────────────────────── */
+
+/* Dialog, dropdown menu, popover, combobox and tooltip. The structure and the
+ * keyboard contract follow shadcn/ui by way of Basecoat, but none of that CSS
+ * could be vendored: Basecoat ships its components as uncompiled Tailwind
+ * (@apply), and its prebuilt bundle needs @starting-style and allow-discrete,
+ * which land in Chromium 129. Fusion 2026 palettes run Qt WebEngine 6.8 =
+ * Chrome/122, so those rules are inert here. Everything below is plain CSS
+ * within that baseline, on the same --aiw-* tokens as the rest of the file.
+ *
+ * Confirm the engine after a Fusion update with:
+ *   python _tools/check_webengine.py
+ *
+ * These are the only components in the system that stack above the page, and
+ * an overlay is where a palette most easily stops looking native: Fusion uses
+ * a hairline and a flat fill for its own menus, never a drop shadow. The one
+ * exception is the dialog, which floats over a scrim and needs a shadow to
+ * read as lifted rather than as a card that lost its scroll position. */
+
+/* Visibility is driven by aria-hidden, so the accessibility tree and the
+ * paint can never disagree -- there is no separate .is-open to fall out of
+ * sync with what a screen reader is told. */
+.aiw-pop {
+  position: absolute;
+  z-index: 50;
+  min-width: 180px;
+  padding: 4px;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 8px;
+  background: var(--aiw-surface);
+  color: var(--aiw-text);
+  /* Opacity and visibility only. A transform here fights the JS that flips
+   * the panel above the trigger when it would clip the palette. */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .12s ease, visibility .12s;
+}
+
+.aiw-pop[aria-hidden="false"] { opacity: 1; visibility: visible; }
+
+/* The anchor for an absolutely positioned panel. */
+.aiw-pop-host { position: relative; }
+
+/* Placement, set by the JS once it has measured the trigger. Default is below
+ * and left-aligned; the flipped forms are what keep a menu on screen in a
+ * short docked palette. */
+.aiw-pop--below { top: calc(100% + 4px); left: 0; }
+.aiw-pop--above { bottom: calc(100% + 4px); left: 0; }
+.aiw-pop--below-end { top: calc(100% + 4px); right: 0; }
+.aiw-pop--above-end { bottom: calc(100% + 4px); right: 0; }
+
+/* ── Menu ─────────────────────────────────────────────────────────────── */
+
+/* Shared by the dropdown menu and the combobox list, so a row looks the same
+ * whichever opened it. 32px rather than the 44px of a form control: a menu row
+ * is a list item, and 44px each makes a six-item menu taller than the palette. */
+.aiw-menu { display: flex; flex-direction: column; }
+
+.aiw-menu-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--aiw-text);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Hover and keyboard highlight share one appearance, driven by the JS setting
+ * .is-active as it moves through the list. Relying on :hover alone leaves the
+ * arrow keys invisible; relying on :focus alone breaks the combobox, where
+ * focus has to stay in the text input while the list is navigated. */
+.aiw-menu-item:hover,
+.aiw-menu-item.is-active { background: var(--aiw-surface-hover); }
+
+.aiw-menu-item[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+
+/* The item grows a leading slot only when the menu is checkable, so a plain
+ * menu keeps its text flush against the edge. */
+.aiw-menu-item::before {
+  flex: none;
+  width: 0;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.aiw-menu--check .aiw-menu-item::before {
+  width: 14px;
+  content: '';
+}
+
+.aiw-menu--check .aiw-menu-item[aria-checked="true"]::before {
+  color: var(--aiw-accent);
+  content: '\2713';
+}
+
+/* A trailing shortcut hint, pushed to the right edge. */
+.aiw-menu-item > .aiw-menu-hint {
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--aiw-text-muted);
+  font-size: 11px;
+}
+
+.aiw-menu-label {
+  padding: 6px 8px 4px;
+  color: var(--aiw-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.aiw-menu-sep {
+  height: 1px;
+  margin: 4px 0;
+  border: 0;
+  background: var(--aiw-border);
+}
+
+.aiw-menu-item--danger { color: var(--aiw-danger); }
+
+/* ── Dropdown menu ────────────────────────────────────────────────────── */
+
+/* Trigger plus panel. The trigger is a normal .aiw-btn, so nothing new is
+ * needed for it beyond the caret. */
+.aiw-menu-caret {
+  margin-left: 6px;
+  font-size: 10px;
+  opacity: .7;
+}
+
+/* ── Combobox ─────────────────────────────────────────────────────────── */
+
+/* A text input that filters a list. Distinct from .aiw-select, which is a
+ * native <select> and should stay the default when the options are few and
+ * fixed -- the native control gets Fusion's own menu rendering for free. */
+.aiw-combo { position: relative; }
+.aiw-combo > .aiw-input { width: 100%; }
+
+.aiw-combo-list {
+  max-height: 240px;
+  overflow-y: auto;
+  /* The panel is the scroller, so the list cannot push the palette taller. */
+  overscroll-behavior: contain;
+}
+
+.aiw-combo-empty {
+  padding: 10px 8px;
+  color: var(--aiw-text-muted);
+  font-size: 13px;
+}
+
+/* The matched run inside a row. A background tint rather than bold, so the
+ * row does not reflow as the query narrows. */
+.aiw-combo-mark {
+  background: var(--aiw-accent);
+  color: var(--aiw-solid-text);
+  border-radius: 2px;
+}
+
+/* ── Dialog ───────────────────────────────────────────────────────────── */
+
+/* A native <dialog>, so Fusion's engine supplies the top layer, the modal
+ * focus trap and Escape-to-close rather than JS reimplementing them. Chromium
+ * 122 has ::backdrop and showModal(); it does not have @starting-style, so the
+ * entry is not animated. It appears immediately, which is the correct
+ * degradation -- an unanimated dialog is fine, an invisible one is not. */
+.aiw-dialog {
+  width: calc(100% - 32px);
+  max-width: 420px;
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 12px;
+  background: var(--aiw-surface);
+  color: var(--aiw-text);
+  /* The one shadow in the system. A modal sits over a scrim with no hairline
+   * neighbour to separate it from, so the border alone reads as flat. */
+  box-shadow: 0 12px 32px rgb(0 0 0 / .38);
+}
+
+.aiw-dialog::backdrop { background: rgb(0 0 0 / .5); }
+
+.aiw-dialog > header { padding: 20px 20px 0; }
+
+.aiw-dialog-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.aiw-dialog-desc {
+  margin: 6px 0 0;
+  color: var(--aiw-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.aiw-dialog > section {
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+/* Reversed so the confirming action sits on the right, matching Fusion's own
+ * dialogs, while the DOM order still puts Cancel first for the keyboard. */
+.aiw-dialog > footer {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+
+.aiw-dialog > footer > .aiw-btn { flex: 1; }
+
+/* ── Tooltip ──────────────────────────────────────────────────────────── */
+
+/* Pure CSS: no JS, no positioning pass, and it cannot be opened by keyboard,
+ * so it must never carry information that is not also available elsewhere.
+ * Use it to name an icon button, not to explain a setting -- .aiw-help is what
+ * explains a setting. */
+.aiw-tip { position: relative; }
+
+.aiw-tip > .aiw-tip-body {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 60;
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--aiw-border-strong);
+  border-radius: 6px;
+  background: var(--aiw-surface-sunken);
+  color: var(--aiw-text);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: normal;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .12s ease, visibility .12s;
+  pointer-events: none;
+}
+
+.aiw-tip:hover > .aiw-tip-body,
+.aiw-tip:focus-within > .aiw-tip-body { opacity: 1; visibility: visible; }
+
+/* ── Utilities ────────────────────────────────────────────────────────── */
+
+.aiw-stack > * + * { margin-top: 14px; }
+.aiw-empty { padding: 20px 2px; color: var(--aiw-text-muted); font-size: 13px; }
+.aiw-error { margin-top: 6px; color: var(--aiw-danger); font-size: 12px; }

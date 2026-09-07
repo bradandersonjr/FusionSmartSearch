@@ -8,5 +8,5 @@
     "ai": true
   },
   "ai_assistant": "chatgpt",
-  "search_all_mode": false
+  "search_all_mode": true
 }
